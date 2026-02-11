@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pharm-Tech Dashboard</title>
+    
+    <style>
+        /* CSS - التنسيق الجمالي */
+        :root {
+            --primary-color: #007bff;
+            --secondary-color: #28a745;
+            --bg-color: #f4f7f9;
+            --text-color: #333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            transition: all 0.3s ease;
+        }
+
+        /* الهيدر وزر اللغة */
+        nav {
+            background-color: white;
+            padding: 15px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #lang-btn {
+            background: #eee;
+            border: 2px solid var(--primary-color);
+            padding: 8px 15px;
+            border-radius: 25px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        #lang-btn:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .flag-icon {
+            width: 20px;
+            border-radius: 2px;
+        }
+
+        /* المحتوى الرئيسي */
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .hero-section h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .hero-section p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        /* بطاقة حساب الجرعات */
+        .calc-card {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.05);
+            margin-top: 30px;
+        }
+
+        input {
+            width: 70%;
+            padding: 12px 20px;
+            margin: 20px 0;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        input:focus {
+            border-color: var(--primary-color);
+        }
+
+        button#main-action-btn {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 12px 40px;
+            font-size: 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button#main-action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+        }
+
+        #result-area {
+            margin-top: 25px;
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--primary-color);
+            min-height: 30px;
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo">💊 Pharm-Tech</div>
+        <button id="lang-btn" onclick="toggleLanguage()">
+            <img id="lang-flag" class="flag-icon" src="https://flagcdn.com/w40/tr.png" alt="Turkey Flag">
+            <span id="lang-text">Türkçe</span>
+        </button>
+    </nav>
+
+    <div class="container">
+        <div class="hero-section">
+            <h1 id="title">نظام الصيدلة الذكي</h1>
+            <p id="description">دمج البرمجة لخدمة الرعاية الصحية بدقة</p>
+        </div>
+
+        <div class="calc-card">
+            <h3 id="calc-title">محاكي حساب جرعة الدواء (للأطفال)</h3>
+            <input type="number" id="weight-input" placeholder="أدخل وزن الطفل (كغ)">
+            <br>
+            <button id="main-action-btn" onclick="calculateDose()">احسب الجرعة</button>
+            <div id="result-area"></div>
+        </div>
+    </div>
+
+    <script>
+        /* JavaScript - المنطق وتبديل اللغة */
+        let currentLang = 'ar';
+
+        const content = {
+            ar: {
+                title: "نظام الصيدلة الذكي",
+                description: "دمج البرمجة لخدمة الرعاية الصحية بدقة",
+                calcTitle: "محاكي حساب جرعة الدواء (للأطفال)",
+                placeholder: "أدخل وزن الطفل (كغ)",
+                btnText: "احسب الجرعة",
+                nextLangName: "Türkçe",
+                flag: "https://flagcdn.com/w40/tr.png",
+                dir: "rtl",
+                resultMsg: "الجرعة الموصى بها: ",
+                unit: " ملغ"
+            },
+            tr: {
+                title: "Akıllı Eczane Sistemi",
+                description: "Sağlık hizmetlerine hassasiyetle hizmet etmek için yazılım entegrasyonu",
+                calcTitle: "İlaç Doz Simülatörü (Çocuklar için)",
+                placeholder: "Çocuğun kilosunu girin (kg)",
+                btnText: "Dozu Hesapla",
+                nextLangName: "العربية",
+                flag: "https://flagcdn.com/w40/sy.png",
+                dir: "ltr",
+                resultMsg: "Önerilen doz: ",
+                unit: " mg"
+            }
+        };
+
+        function toggleLanguage() {
+            // تبديل اللغة
+            currentLang = currentLang === 'ar' ? 'tr' : 'ar';
+            const langData = content[currentLang];
+
+            // تغيير اتجاه الصفحة ونصوصها
+            document.documentElement.dir = langData.dir;
+            document.documentElement.lang = currentLang;
+
+            document.getElementById('title').innerText = langData.title;
+            document.getElementById('description').innerText = langData.description;
+            document.getElementById('calc-title').innerText = langData.calcTitle;
+            document.getElementById('weight-input').placeholder = langData.placeholder;
+            document.getElementById('main-action-btn').innerText = langData.btnText;
+            document.getElementById('lang-text').innerText = langData.nextLangName;
+            document.getElementById('lang-flag').src = langData.flag;
+            
+            // مسح النتيجة عند تبديل اللغة
+            document.getElementById('result-area').innerText = "";
+        }
+
+        function calculateDose() {
+            const weight = document.getElementById('weight-input').value;
+            const resultArea = document.getElementById('result-area');
+
+            if (weight > 0) {
+                // عملية حسابية بسيطة (كمثال: 10 ملغ لكل كيلو)
+                const dose = weight * 10;
+                resultArea.innerText = content[currentLang].resultMsg + dose + content[currentLang].unit;
+            } else {
+                resultArea.innerText = currentLang === 'ar' ? "يرجى إدخال وزن صحيح" : "Lütfen geçerli bir kilo girin";
+            }
+        }
+    </script>
+</body>
+</html>
